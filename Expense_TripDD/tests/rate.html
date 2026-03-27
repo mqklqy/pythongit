@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<title>人民币汇率中间价</title>
+			<link rel="stylesheet" type="text/css" href="/AppStructured/res/css/css.css" />
+			
+			<script type="text/javascript"  src="/AppStructured/res/common/jquery/jquery-1.4.2.js"/></script>
+			<script type="text/javascript"  src="/AppStructured/res/js/datepicker/WdatePicker.js"/></script>
+<script type="text/javascript">
+
+function validate() {
+
+		//var currencyId = document.getElementById("currencyId").value;
+		var startDateId = document.getElementById("startDateId").value;
+		var endDateId = document.getElementById("endDateId").value;
+		//document.cookie="xs=true";
+		
+
+		//if(currencyId==''){
+		//	alert("币种 不能为空,请选择!");
+		///	return false;
+		//}
+		//	if(startDateId==''){
+		//		alert("开始日期 不能为空,请选择!");
+		//		return false;
+		//	}
+		//	if(endDateId==''){
+		//		alert("结束日期 不能为空,请选择!");
+		//		return false;
+	//		}
+		if(startDateId==""){
+			alert("开始日期不能为空!");
+			return false;
+		}
+		if(endDateId==""){
+			alert("结束日期不能为空!");
+			return false;
+		}
+		if(daysBetween(endDateId,startDateId) < 0){
+			alert("结束日期 不能小于 开始日期,请重新选择!");
+			return false;
+		}else if(daysBetween(endDateId,startDateId) > 366){
+			alert("查询间隔不能超过366天，请重新选择!");
+			return false;
+		}
+	  document.RMBQuery.action="/AppStructured/hlw/RMBQuery.do";
+      document.RMBQuery.submit();
+	}
+	function tijiao()
+	{
+	  document.RMBQuery.action="/AppStructured/hlw/exportRMBExcel.do";
+      document.RMBQuery.submit();
+	}
+	
+	//| 求两个时间的天数差 日期格式为 YYYY-MM-dd   
+function daysBetween(DateOne,DateTwo) 
+{  
+
+    var OneMonth = DateOne.substring(5,DateOne.lastIndexOf ('-')); 
+    var OneDay = DateOne.substring(DateOne.length,DateOne.lastIndexOf ('-')+1); 
+    var OneYear = DateOne.substring(0,DateOne.indexOf ('-')); 
+
+    var TwoMonth = DateTwo.substring(5,DateTwo.lastIndexOf ('-')); 
+    var TwoDay = DateTwo.substring(DateTwo.length,DateTwo.lastIndexOf ('-')+1); 
+    var TwoYear = DateTwo.substring(0,DateTwo.indexOf ('-')); 
+
+    var cha=((Date.parse(OneMonth+'/'+OneDay+'/'+OneYear)- Date.parse(TwoMonth+'/'+TwoDay+'/'+TwoYear))/86400000);   
+    return cha;
+}
+
+</script>
+
+	</head>
+	<body style="width:100%;overflow-x: auto; overflow-y: auto;" >
+
+		<form action="/AppStructured/hlw/RMBQuery.do" method="post" name="RMBQuery" onsubmit="return validate()" id="RMBQuery" namespace="/view">
+		<table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="100%" colspan="3">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" align="center" valign="top">
+					<table width="100%" border="0" align="center" cellspacing="0">
+						<tr>
+							<td class="tabulation">
+								<!-- <div style="position: relative">
+									<div id="menu2">
+										查询
+									</div>
+								</div> -->
+								<table width="100%" border="0" align="center" cellpadding="0"
+									cellspacing="0" class="form-table">
+									<tr>
+									<!-- <td width="12%" class="form-table-label">
+											&nbsp;&nbsp;币种&nbsp;&nbsp;
+										</td>
+										<td > 
+											
+										<s:select name="projectBean.currencys" id="currencyId" value="projectBean.currencys" list="currencyList"  listKey="currency" listValue="currency" size="6" cssStyle="width:200px"  multiple="true" />											
+										<font color="red">*</font>
+										</td>-->	
+										<td width="17%" class="form-table-label">
+											&nbsp;&nbsp;日期条件&nbsp;&nbsp;
+										</td>
+										<td style="text-align:left;">
+											<span style="float: left;">
+												&nbsp;&nbsp;从&nbsp;&nbsp;
+												<input type="text" name="startDate" id="startDateId" class="Wdate"  onfocus="WdatePicker({lang:'zh-cn'})" size="16"  />
+												&nbsp;&nbsp;至&nbsp;&nbsp;
+												<input name="endDate"  id="endDateId" class="Wdate"  onfocus="WdatePicker({lang:'zh-cn'})"  size="16"  type="text"  />
+											</span>	
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<input name="queryYN" TYPE="hidden" value="true"></input>
+											<span class="form-table-label">
+												 <input style="height: 24px;" onclick="javascript:validate()" type="button" value="查询"/>
+											 </span>
+
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" height="5"></td>
+			</tr>
+			<tr>
+				<td colspan="3" align="center" valign="top">
+					<br>
+					
+					<table width="100%" border="0" align="center" cellspacing="0">
+							<tr>
+								<td align="left">
+									<span class="form-table-label">
+									
+									<input onclick="javascript:tijiao()" type="button" value="导出表格"/>
+									
+									</span>
+								</td>
+							</tr>
+						<tr>
+							<td height="20"></td>
+						</tr>
+						
+						<tr>
+							<!-- 查询条件 -->
+							<td class="tabulation">
+								<div style="position: relative">
+									<div id="menu2">
+										人民币汇率中间价列表
+									</div>
+								</div>
+								
+								<table class="list" id="InfoTable" width="100%" border="0" align="center" cellpadding="3" cellspacing="1">
+									<tr>
+										<th width="12%" class="table_head" style="cursor:'default'" id="comtemplatename" >日期</th>
+										
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											美元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											欧元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											日元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											港元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											英镑
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											澳元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											新西兰元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											新加坡元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											瑞士法郎
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											加元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											澳门元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											林吉特
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											卢布
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											兰特
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											韩元
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											迪拉姆
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											里亚尔
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											福林
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											兹罗提
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											丹麦克朗
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											瑞典克朗
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											挪威克朗
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											里拉
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											比索
+											</th>
+											<th width="8%" class="table_head" style="cursor:'default'" id="comtemplatename" >
+											<!-- <s:property  value="currency"/>&nbsp; -->
+											泰铢
+											</th>
+									</tr>
+									
+									<!-- <s:iterator value="RMBDataList" status="stat" >
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+											<s:iterator value="RMBDataList[#stat.index]" status="stat1" >
+											
+												<td width="8%" align="center"  >
+													<s:if test="RMBDataList[#stat.index][#stat1.index]==null">-</s:if>
+													<s:else><s:property />&nbsp;</s:else>
+												</td>
+											
+											</s:iterator>
+										</tr>
+									</s:iterator> -->
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-23
+													</td>
+													<td td width="8%" align="center" >
+														690.41
+													</td>
+													<td td width="8%" align="center" >
+														796.76
+													</td>
+													<td td width="8%" align="center" >
+														4.332
+													</td>
+													<td td width="8%" align="center" >
+														88.114
+													</td>
+													<td td width="8%" align="center" >
+														919.09
+													</td>
+													<td td width="8%" align="center" >
+														483.26
+													</td>
+													<td td width="8%" align="center" >
+														402.08
+													</td>
+													<td td width="8%" align="center" >
+														537.76
+													</td>
+													<td td width="8%" align="center" >
+														875.34
+													</td>
+													<td td width="8%" align="center" >
+														502.75
+													</td>
+													<td td width="8%" align="center" >
+														116.95
+													</td>
+													<td td width="8%" align="center" >
+														57.056
+													</td>
+													<td td width="8%" align="center" >
+														1206.5
+													</td>
+													<td td width="8%" align="center" >
+														247.6
+													</td>
+													<td td width="8%" align="center" >
+														21832.0
+													</td>
+													<td td width="8%" align="center" >
+														53.286
+													</td>
+													<td td width="8%" align="center" >
+														54.469
+													</td>
+													<td td width="8%" align="center" >
+														4930.29
+													</td>
+													<td td width="8%" align="center" >
+														53.613
+													</td>
+													<td td width="8%" align="center" >
+														93.74
+													</td>
+													<td td width="8%" align="center" >
+														135.5
+													</td>
+													<td td width="8%" align="center" >
+														138.86
+													</td>
+													<td td width="8%" align="center" >
+														642.868
+													</td>
+													<td td width="8%" align="center" >
+														260.15
+													</td>
+													<td td width="8%" align="center" >
+														477.74
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-20
+													</td>
+													<td td width="8%" align="center" >
+														688.98
+													</td>
+													<td td width="8%" align="center" >
+														796.75
+													</td>
+													<td td width="8%" align="center" >
+														4.357
+													</td>
+													<td td width="8%" align="center" >
+														87.915
+													</td>
+													<td td width="8%" align="center" >
+														923.95
+													</td>
+													<td td width="8%" align="center" >
+														487.29
+													</td>
+													<td td width="8%" align="center" >
+														403.82
+													</td>
+													<td td width="8%" align="center" >
+														538.69
+													</td>
+													<td td width="8%" align="center" >
+														872.43
+													</td>
+													<td td width="8%" align="center" >
+														501.05
+													</td>
+													<td td width="8%" align="center" >
+														117.23
+													</td>
+													<td td width="8%" align="center" >
+														57.199
+													</td>
+													<td td width="8%" align="center" >
+														1251.12
+													</td>
+													<td td width="8%" align="center" >
+														243.2
+													</td>
+													<td td width="8%" align="center" >
+														21658.0
+													</td>
+													<td td width="8%" align="center" >
+														53.374
+													</td>
+													<td td width="8%" align="center" >
+														54.553
+													</td>
+													<td td width="8%" align="center" >
+														4901.7
+													</td>
+													<td td width="8%" align="center" >
+														53.566
+													</td>
+													<td td width="8%" align="center" >
+														93.78
+													</td>
+													<td td width="8%" align="center" >
+														135.09
+													</td>
+													<td td width="8%" align="center" >
+														138.06
+													</td>
+													<td td width="8%" align="center" >
+														643.874
+													</td>
+													<td td width="8%" align="center" >
+														257.88
+													</td>
+													<td td width="8%" align="center" >
+														472.55
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-19
+													</td>
+													<td td width="8%" align="center" >
+														689.75
+													</td>
+													<td td width="8%" align="center" >
+														790.83
+													</td>
+													<td td width="8%" align="center" >
+														4.3169
+													</td>
+													<td td width="8%" align="center" >
+														88.006
+													</td>
+													<td td width="8%" align="center" >
+														915.04
+													</td>
+													<td td width="8%" align="center" >
+														484.85
+													</td>
+													<td td width="8%" align="center" >
+														400.04
+													</td>
+													<td td width="8%" align="center" >
+														537.34
+													</td>
+													<td td width="8%" align="center" >
+														870.27
+													</td>
+													<td td width="8%" align="center" >
+														502.2
+													</td>
+													<td td width="8%" align="center" >
+														117.09
+													</td>
+													<td td width="8%" align="center" >
+														56.871
+													</td>
+													<td td width="8%" align="center" >
+														1214.45
+													</td>
+													<td td width="8%" align="center" >
+														246.31
+													</td>
+													<td td width="8%" align="center" >
+														21779.0
+													</td>
+													<td td width="8%" align="center" >
+														53.255
+													</td>
+													<td td width="8%" align="center" >
+														54.434
+													</td>
+													<td td width="8%" align="center" >
+														4976.25
+													</td>
+													<td td width="8%" align="center" >
+														54.049
+													</td>
+													<td td width="8%" align="center" >
+														94.51
+													</td>
+													<td td width="8%" align="center" >
+														136.34
+													</td>
+													<td td width="8%" align="center" >
+														139.25
+													</td>
+													<td td width="8%" align="center" >
+														642.504
+													</td>
+													<td td width="8%" align="center" >
+														258.91
+													</td>
+													<td td width="8%" align="center" >
+														475.87
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-18
+													</td>
+													<td td width="8%" align="center" >
+														689.09
+													</td>
+													<td td width="8%" align="center" >
+														794.25
+													</td>
+													<td td width="8%" align="center" >
+														4.3316
+													</td>
+													<td td width="8%" align="center" >
+														87.918
+													</td>
+													<td td width="8%" align="center" >
+														919.43
+													</td>
+													<td td width="8%" align="center" >
+														489.18
+													</td>
+													<td td width="8%" align="center" >
+														403.13
+													</td>
+													<td td width="8%" align="center" >
+														539.43
+													</td>
+													<td td width="8%" align="center" >
+														877.07
+													</td>
+													<td td width="8%" align="center" >
+														502.66
+													</td>
+													<td td width="8%" align="center" >
+														117.21
+													</td>
+													<td td width="8%" align="center" >
+														56.849
+													</td>
+													<td td width="8%" align="center" >
+														1196.31
+													</td>
+													<td td width="8%" align="center" >
+														242.34
+													</td>
+													<td td width="8%" align="center" >
+														21599.0
+													</td>
+													<td td width="8%" align="center" >
+														53.354
+													</td>
+													<td td width="8%" align="center" >
+														54.54
+													</td>
+													<td td width="8%" align="center" >
+														4890.1
+													</td>
+													<td td width="8%" align="center" >
+														53.612
+													</td>
+													<td td width="8%" align="center" >
+														94.08
+													</td>
+													<td td width="8%" align="center" >
+														134.79
+													</td>
+													<td td width="8%" align="center" >
+														139.27
+													</td>
+													<td td width="8%" align="center" >
+														642.098
+													</td>
+													<td td width="8%" align="center" >
+														256.44
+													</td>
+													<td td width="8%" align="center" >
+														469.77
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-17
+													</td>
+													<td td width="8%" align="center" >
+														689.61
+													</td>
+													<td td width="8%" align="center" >
+														792.38
+													</td>
+													<td td width="8%" align="center" >
+														4.3293
+													</td>
+													<td td width="8%" align="center" >
+														88.073
+													</td>
+													<td td width="8%" align="center" >
+														917.25
+													</td>
+													<td td width="8%" align="center" >
+														486.68
+													</td>
+													<td td width="8%" align="center" >
+														402.99
+													</td>
+													<td td width="8%" align="center" >
+														539.22
+													</td>
+													<td td width="8%" align="center" >
+														874.31
+													</td>
+													<td td width="8%" align="center" >
+														503.39
+													</td>
+													<td td width="8%" align="center" >
+														117.01
+													</td>
+													<td td width="8%" align="center" >
+														56.944
+													</td>
+													<td td width="8%" align="center" >
+														1180.19
+													</td>
+													<td td width="8%" align="center" >
+														242.29
+													</td>
+													<td td width="8%" align="center" >
+														21648.0
+													</td>
+													<td td width="8%" align="center" >
+														53.292
+													</td>
+													<td td width="8%" align="center" >
+														54.451
+													</td>
+													<td td width="8%" align="center" >
+														4929.56
+													</td>
+													<td td width="8%" align="center" >
+														53.835
+													</td>
+													<td td width="8%" align="center" >
+														94.34
+													</td>
+													<td td width="8%" align="center" >
+														135.66
+													</td>
+													<td td width="8%" align="center" >
+														140.48
+													</td>
+													<td td width="8%" align="center" >
+														641.066
+													</td>
+													<td td width="8%" align="center" >
+														256.8
+													</td>
+													<td td width="8%" align="center" >
+														470.34
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-16
+													</td>
+													<td td width="8%" align="center" >
+														690.57
+													</td>
+													<td td width="8%" align="center" >
+														789.6
+													</td>
+													<td td width="8%" align="center" >
+														4.3276
+													</td>
+													<td td width="8%" align="center" >
+														88.217
+													</td>
+													<td td width="8%" align="center" >
+														914.49
+													</td>
+													<td td width="8%" align="center" >
+														483.37
+													</td>
+													<td td width="8%" align="center" >
+														400.02
+													</td>
+													<td td width="8%" align="center" >
+														538.26
+													</td>
+													<td td width="8%" align="center" >
+														873.74
+													</td>
+													<td td width="8%" align="center" >
+														503.56
+													</td>
+													<td td width="8%" align="center" >
+														116.81
+													</td>
+													<td td width="8%" align="center" >
+														57.017
+													</td>
+													<td td width="8%" align="center" >
+														1160.84
+													</td>
+													<td td width="8%" align="center" >
+														244.61
+													</td>
+													<td td width="8%" align="center" >
+														21677.0
+													</td>
+													<td td width="8%" align="center" >
+														53.197
+													</td>
+													<td td width="8%" align="center" >
+														54.352
+													</td>
+													<td td width="8%" align="center" >
+														4976.24
+													</td>
+													<td td width="8%" align="center" >
+														54.127
+													</td>
+													<td td width="8%" align="center" >
+														94.66
+													</td>
+													<td td width="8%" align="center" >
+														136.88
+													</td>
+													<td td width="8%" align="center" >
+														141.52
+													</td>
+													<td td width="8%" align="center" >
+														640.071
+													</td>
+													<td td width="8%" align="center" >
+														258.92
+													</td>
+													<td td width="8%" align="center" >
+														469.98
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-13
+													</td>
+													<td td width="8%" align="center" >
+														690.07
+													</td>
+													<td td width="8%" align="center" >
+														794.02
+													</td>
+													<td td width="8%" align="center" >
+														4.3284
+													</td>
+													<td td width="8%" align="center" >
+														88.163
+													</td>
+													<td td width="8%" align="center" >
+														920.22
+													</td>
+													<td td width="8%" align="center" >
+														487.88
+													</td>
+													<td td width="8%" align="center" >
+														403.27
+													</td>
+													<td td width="8%" align="center" >
+														539.01
+													</td>
+													<td td width="8%" align="center" >
+														877.36
+													</td>
+													<td td width="8%" align="center" >
+														505.44
+													</td>
+													<td td width="8%" align="center" >
+														116.83
+													</td>
+													<td td width="8%" align="center" >
+														56.979
+													</td>
+													<td td width="8%" align="center" >
+														1155.06
+													</td>
+													<td td width="8%" align="center" >
+														243.17
+													</td>
+													<td td width="8%" align="center" >
+														21606.0
+													</td>
+													<td td width="8%" align="center" >
+														53.289
+													</td>
+													<td td width="8%" align="center" >
+														54.445
+													</td>
+													<td td width="8%" align="center" >
+														4933.33
+													</td>
+													<td td width="8%" align="center" >
+														53.769
+													</td>
+													<td td width="8%" align="center" >
+														94.11
+													</td>
+													<td td width="8%" align="center" >
+														135.66
+													</td>
+													<td td width="8%" align="center" >
+														140.7
+													</td>
+													<td td width="8%" align="center" >
+														641.076
+													</td>
+													<td td width="8%" align="center" >
+														258.65
+													</td>
+													<td td width="8%" align="center" >
+														466.77
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-12
+													</td>
+													<td td width="8%" align="center" >
+														689.59
+													</td>
+													<td td width="8%" align="center" >
+														795.68
+													</td>
+													<td td width="8%" align="center" >
+														4.3339
+													</td>
+													<td td width="8%" align="center" >
+														88.128
+													</td>
+													<td td width="8%" align="center" >
+														922.25
+													</td>
+													<td td width="8%" align="center" >
+														491.58
+													</td>
+													<td td width="8%" align="center" >
+														406.63
+													</td>
+													<td td width="8%" align="center" >
+														540.21
+													</td>
+													<td td width="8%" align="center" >
+														881.63
+													</td>
+													<td td width="8%" align="center" >
+														506.55
+													</td>
+													<td td width="8%" align="center" >
+														116.93
+													</td>
+													<td td width="8%" align="center" >
+														56.911
+													</td>
+													<td td width="8%" align="center" >
+														1150.04
+													</td>
+													<td td width="8%" align="center" >
+														240.16
+													</td>
+													<td td width="8%" align="center" >
+														21463.0
+													</td>
+													<td td width="8%" align="center" >
+														53.31
+													</td>
+													<td td width="8%" align="center" >
+														54.466
+													</td>
+													<td td width="8%" align="center" >
+														4872.41
+													</td>
+													<td td width="8%" align="center" >
+														53.399
+													</td>
+													<td td width="8%" align="center" >
+														93.9
+													</td>
+													<td td width="8%" align="center" >
+														134.19
+													</td>
+													<td td width="8%" align="center" >
+														140.17
+													</td>
+													<td td width="8%" align="center" >
+														639.958
+													</td>
+													<td td width="8%" align="center" >
+														257.33
+													</td>
+													<td td width="8%" align="center" >
+														463.75
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-11
+													</td>
+													<td td width="8%" align="center" >
+														689.17
+													</td>
+													<td td width="8%" align="center" >
+														799.86
+													</td>
+													<td td width="8%" align="center" >
+														4.3575
+													</td>
+													<td td width="8%" align="center" >
+														88.075
+													</td>
+													<td td width="8%" align="center" >
+														924.32
+													</td>
+													<td td width="8%" align="center" >
+														490.36
+													</td>
+													<td td width="8%" align="center" >
+														407.89
+													</td>
+													<td td width="8%" align="center" >
+														540.91
+													</td>
+													<td td width="8%" align="center" >
+														884.76
+													</td>
+													<td td width="8%" align="center" >
+														506.84
+													</td>
+													<td td width="8%" align="center" >
+														117.03
+													</td>
+													<td td width="8%" align="center" >
+														56.915
+													</td>
+													<td td width="8%" align="center" >
+														1147.81
+													</td>
+													<td td width="8%" align="center" >
+														236.47
+													</td>
+													<td td width="8%" align="center" >
+														21327.0
+													</td>
+													<td td width="8%" align="center" >
+														53.318
+													</td>
+													<td td width="8%" align="center" >
+														54.481
+													</td>
+													<td td width="8%" align="center" >
+														4833.38
+													</td>
+													<td td width="8%" align="center" >
+														53.283
+													</td>
+													<td td width="8%" align="center" >
+														93.45
+													</td>
+													<td td width="8%" align="center" >
+														133.2
+													</td>
+													<td td width="8%" align="center" >
+														139.97
+													</td>
+													<td td width="8%" align="center" >
+														639.932
+													</td>
+													<td td width="8%" align="center" >
+														255.28
+													</td>
+													<td td width="8%" align="center" >
+														459.03
+													</td>
+											
+										</tr>
+										<tr class="first" onMouseover='this.style.backgroundColor="#fffcbf"' onMouseout='this.style.backgroundColor="#eff6fe"'>
+													<td td width="8%" align="center" >
+														2026-03-10
+													</td>
+													<td td width="8%" align="center" >
+														689.82
+													</td>
+													<td td width="8%" align="center" >
+														801.98
+													</td>
+													<td td width="8%" align="center" >
+														4.3717
+													</td>
+													<td td width="8%" align="center" >
+														88.196
+													</td>
+													<td td width="8%" align="center" >
+														926.58
+													</td>
+													<td td width="8%" align="center" >
+														487.65
+													</td>
+													<td td width="8%" align="center" >
+														408.69
+													</td>
+													<td td width="8%" align="center" >
+														541.37
+													</td>
+													<td td width="8%" align="center" >
+														887.26
+													</td>
+													<td td width="8%" align="center" >
+														507.85
+													</td>
+													<td td width="8%" align="center" >
+														116.84
+													</td>
+													<td td width="8%" align="center" >
+														57.354
+													</td>
+													<td td width="8%" align="center" >
+														1135.14
+													</td>
+													<td td width="8%" align="center" >
+														236.7
+													</td>
+													<td td width="8%" align="center" >
+														21309.0
+													</td>
+													<td td width="8%" align="center" >
+														53.256
+													</td>
+													<td td width="8%" align="center" >
+														54.438
+													</td>
+													<td td width="8%" align="center" >
+														4832.56
+													</td>
+													<td td width="8%" align="center" >
+														52.982
+													</td>
+													<td td width="8%" align="center" >
+														93.21
+													</td>
+													<td td width="8%" align="center" >
+														132.53
+													</td>
+													<td td width="8%" align="center" >
+														139.14
+													</td>
+													<td td width="8%" align="center" >
+														639.263
+													</td>
+													<td td width="8%" align="center" >
+														256.11
+													</td>
+													<td td width="8%" align="center" >
+														459.8
+													</td>
+											
+										</tr>
+								</table>
+								
+
+							</td>
+						</tr>
+										
+					</table>
+				<!--  	<script type="text/javascript">
+				document.cookie="xs=false";
+					</script>-->
+					
+					
+				</td>
+			</tr>
+		</table>
+		</form>
+	</body>
+</html>
+
